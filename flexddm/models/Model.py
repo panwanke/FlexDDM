@@ -1,13 +1,10 @@
 # packages 
 import pandas as pd
 import numpy as np
-import numba as nb
 import sys
 import math
 from scipy.optimize import minimize
 from scipy.optimize import differential_evolution
-import math
-import sys
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -65,7 +62,7 @@ class Model:
         else:
             fit = differential_evolution(Model.model_function, bounds=bounds_var, x0=params,
                                     args=(props,self.param_number,self.parameter_names, function, data, bounds_var), maxiter=1000, seed=10,
-                                    disp=True, popsize=12, polish=True, callback=printCurrentIteration, workers=-1)
+                                    disp=False, popsize=12, polish=True, callback=printCurrentIteration, workers=-1)
             # popsize = 100, maxiter = 1000
         bestparams = fit.x
         fitstat = fit.fun
@@ -98,15 +95,17 @@ class Model:
                         looplist[i][j][k] = 0.0001
         empirical_proportions = [item for sublist in empirical_proportions for item in sublist]
         model_proportions = [item for sublist in model_proportions for item in sublist]
-        chisquare = 0; finalsum = 0
-        if final == True:
+        
+        chisquare = 0
+        finalsum = 0
+        if final:
             for i, j in enumerate(empirical_proportions):
                 finalsum += 250 * j * np.log(model_proportions[i])
             return -2 * finalsum + param_number * np.log(250)
         for i, j in enumerate(empirical_proportions):
             chisquare += 250 * j * np.log(j / model_proportions[i])
         chisquare = chisquare * 2
-        if math.isinf(chisquare) == True:
+        if math.isinf(chisquare):
             return sys.maxsize
         else:
             return chisquare
@@ -217,7 +216,6 @@ class Model:
         subs = data['id'].unique()
         meanrtlist = []
         acclist = []
-        errorproplist = []
         cdfslist = []
         cafcutofflist = []
         for k, s in enumerate(subs):
@@ -241,10 +239,10 @@ class Model:
         group_accuracy = list(pd.DataFrame(acclist).mean())
         group_caf_quantiles = pd.DataFrame({'rt': group_rt, 'acc': group_accuracy})
         group_cdf_quantiles = list(pd.DataFrame(cdfslist).mean())
-        if np.isnan(group_cdf_quantiles[0]) == True:
+        if np.isnan(group_cdf_quantiles[0]):
             group_cdf_quantiles = [0] * len(QUANTILES_CDF)
         group_caf_cutoffs = list(pd.DataFrame(cafcutofflist).mean())
-        if np.isnan(group_caf_cutoffs[0]) == True:
+        if np.isnan(group_caf_cutoffs[0]):
             group_caf_cutoffs = [0] * len(QUANTILES_CAF)
         return group_caf_quantiles, group_cdf_quantiles, group_caf_cutoffs
     
