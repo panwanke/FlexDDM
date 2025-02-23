@@ -41,9 +41,11 @@ def model_recovery(models, num_simulations=50):
         for df in dfs:
             BIC_df[models[counter].__class__.__name__] = df['bic']
             counter += 1
-        print("!!!!!", BIC_df)
+        
+        # print("!!!!!", BIC_df)
         BIC_mins = BIC_df.idxmin(axis=1)  # finds the minimum value in the row, returns column name where min was found
-        print("#####", BIC_mins) 
+        
+        # print("#####", BIC_mins) 
         # print("BIC MIN COLUMN NAME: ", BIC_mins.column)
         min_BIC_model_counts.append(BIC_mins.value_counts().reindex([model.__class__.__name__ for model in models]).reset_index())
     
@@ -95,6 +97,7 @@ def param_recovery(models, num_simulations=50):
         pbar = tqdm(range(num_simulations))
         pbar.set_description("Simulating Parameter Values")
         for x in pbar: 
+            
             np.random.seed(x)
             broken = True
             while broken:
@@ -122,22 +125,33 @@ def param_recovery(models, num_simulations=50):
                     print(e)
                     print("FITTING CANNOT OCCUR")
                     broken = True
-        correlation_values = []
-        sig_values = []
 
-        # Calculate the correlations for each pair of sublists
-        for i, param_name in enumerate(model.parameter_names):
-            generated_i = [sublist[i] for sublist in generated_params]
-            fit_params_i = [sublist[i] for sublist in fit_params_list]
-            df = pd.DataFrame({'simulated %s' % param_name : generated_i, 'fit %s' % param_name : fit_params_i})
-            correlation, sig_value = pearsonr(generated_i, fit_params_i)
-            correlation_values.append(correlation)
-            sig_values.append(sig_value)
-            param_recovery_plot = sns.lmplot(df, x='simulated %s' % param_name, y='fit %s' % param_name)
+        try: 
+            # Calculate the correlations for each pair of sublists
+            n_params = len(model.parameter_names)
+            fig, axs = plt.subplots(1, n_params, figsize=(3 * n_params, 4))
+            for i, param_name in enumerate(model.parameter_names):
+                generated_i = [sublist[i] for sublist in generated_params]
+                fit_params_i = [sublist[i] for sublist in fit_params_list]
+                df = pd.DataFrame({'simulated %s' % param_name : generated_i, 'fit %s' % param_name : fit_params_i})
+                correlation, sig_value = pearsonr(generated_i, fit_params_i)
+                sns.regplot(df, x='simulated %s' % param_name, y='fit %s' % param_name, ax=axs[i])
+                axs[i].set_title(param_name)
+                axs[i].annotate(
+                    f"r = {correlation:.2f}\np = {sig_value:.2f}",
+                    fontsize = 8,
+                    xy = (0.95, 0.05),
+                    ha = 'right',
+                    va = 'bottom',
+                    xycoords='axes fraction',
+                    bbox=dict(
+                        boxstyle='round,pad=0.3', edgecolor='black', facecolor='white'
+                    )
+                )
+            
+            plt.tight_layout()
             plt.show()
-            plot_path = os.path.join(model_dir, f"{param_name}.png")  
-            param_recovery_plot.savefig(plot_path, dpi=400)
-        
-        print(correlation_values)
-        print(sig_values)
+        except Exception as e:
+            print(e)
+            print(f"Failed to draw parameters recovery for {model.__class__.__name__}")
 
