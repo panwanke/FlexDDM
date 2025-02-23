@@ -20,7 +20,7 @@ def fit(models, input_data, startingParticipants=None, endingParticipants=None, 
         # print("in path instance")
         input_data = getRTData(path=input_data, id=input_data_id, congruency=input_data_congruency, rt=input_data_rt, accuracy=input_data_accuracy)
    
-    if startingParticipants==None and endingParticipants==None:
+    if startingParticipants is None and endingParticipants is None:
         startingParticipants = input_data['id'].min()
         endingParticipants = input_data['id'].max()
 
@@ -53,7 +53,8 @@ def fit(models, input_data, startingParticipants=None, endingParticipants=None, 
             myprops = model.proportions(current_input, quantiles_cdf, quantiles_caf)
             # print(myprops)
             bic = Model.model_function(pars, myprops, model.param_number, model.parameter_names, model.modelsimulationfunction, current_input, model.bounds, final=True)
-            print('BIC = ',bic)
+            
+            # print('BIC = ',bic)
             df.loc[len(df)] = [id] + list(pars) + [fitstat, bic]
 
             if posterior_predictive_check:
