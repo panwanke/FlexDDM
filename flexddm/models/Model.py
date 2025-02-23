@@ -258,7 +258,7 @@ class Model:
         @dt (float): change in time
         @var (float): variance
         """
-        np.random.seed(100)
+        # np.random.seed(100)
         sim_data = self.parallel_sim(function, params)
 
         sim_data_congruent = sim_data[sim_data['congruency']=='congruent']
