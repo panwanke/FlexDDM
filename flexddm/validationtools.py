@@ -98,7 +98,7 @@ def param_recovery(models, num_simulations=50):
         pbar.set_description("Simulating Parameter Values")
         for x in pbar: 
             
-            np.random.seed(x)
+            # np.random.seed(x)
             broken = True
             while broken:
                 simulation_data = pd.DataFrame()
