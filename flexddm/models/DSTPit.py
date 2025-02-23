@@ -65,7 +65,7 @@ class DSTPit(Model):
         Performs simulations for DSTP model.
         @alphaSS (float): boundary separation for stimulus selection phase
         @betaSS (float): initial bias for stimulus selection phase
-        @deltaSS (float): drift rate for stimulus selection phase
+        @delta_flanker_deltaSS_ratio (float): drift rate for flanker arrows during response selection BEFORE stimulus is selected, which is calculated as delta_flanker = deltaSS * delta_flanker_deltaSS_ratio
         @alphaRS (float): boundary separation for response selection phase 
         @betaRS (float): inital bias for response selection phase 
         @delta_target (float): drift rate for target arrow during response selection BEFORE stimulus is selected 

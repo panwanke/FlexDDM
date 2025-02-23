@@ -57,7 +57,7 @@ class DMC (Model):
 
 
     @nb.jit(nopython=True, cache=True, parallel=False, fastmath=True, nogil=True)
-    def model_simulation(alpha, beta, mu_c, shape, characteristic_time, peak_amplitude, tau, dt=DT, var=VAR, nTrials=NTRIALS, noiseseed=NOISESEED,):
+    def model_simulation(alpha, beta, mu_c, shape, characteristic_time, peak_amplitude, tau, dt=DT, var=VAR, nTrials=NTRIALS, noiseseed=NOISESEED):
         """
         Performs simulations for DMC model. 
         @alpha (float): boundary separation
@@ -67,10 +67,10 @@ class DMC (Model):
         @characteristic_time (float): duration of the automatic process
         @peak_amplitude (float): amplitude of automatic activation
         @tau (float): non-decision time
-        @dt (float): change in time 
-        @var (float): variance
-        @nTrials (int): number of trials
-        @noiseseed (int): random seed for noise consistency
+        @dt (float): change in time (default: DT)
+        @var (float): variance (default: VAR)
+        @nTrials (int): number of trials (default: NTRIALS)
+        @noiseseed (int): random seed for noise consistency (default: NOISESEED)
         """
 
         choicelist = [np.nan]*nTrials
@@ -104,5 +104,3 @@ class DMC (Model):
                     rtlist[n] = t
 
         return (np.arange(1, nTrials+1), choicelist, rtlist, congruencylist)
-    
-    

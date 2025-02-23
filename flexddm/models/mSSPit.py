@@ -61,7 +61,8 @@ class mSSPit(Model):
         Performs simulations for SSP model.
         @alpha (float): boundary separation
         @beta (float): initial bias
-        @p (float): perceptual input of the stimulus
+        @eta (float): noise scaling factor
+        @eta_r (float): noise reduction rate
         @sd_0_sd_r_ratio (float): ratio of the initial standard deviation of the Gaussian distribution describing the attentional spotlight and shrinking rate (i.e. interference time) 
         @tau (float): non-decision time
         @dt (float): change in time 

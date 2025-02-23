@@ -56,7 +56,7 @@ class SSPit(Model):
     @nb.jit(nopython=True, cache=True, parallel=False, fastmath=True, nogil=True)
     def model_simulation(alpha, beta, p, sd_0_sd_r_ratio, tau, dt=DT, var=VAR, nTrials=NTRIALS, noiseseed=NOISESEED):
         """
-        Performs simulations for SSP model.
+        Performs simulations for SSPit model.
         @alpha (float): boundary separation
         @beta (float): initial bias
         @p (float): perceptual input of the stimulus

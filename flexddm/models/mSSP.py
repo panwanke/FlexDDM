@@ -63,9 +63,10 @@ class mSSP(Model):
         Performs simulations for SSP model.
         @alpha (float): boundary separation
         @beta (float): initial bias
-        @p (float): perceptual input of the stimulus
+        @eta (float): scaling factor for noise
+        @eta_r (float): rate of change of noise scaling factor
         @sd_0 (float): initial standard deviation of the Gaussian distribution describing the attentional spotlight 
-        @sd_r (float): shrinking rate of the standard deviation of the Guassian distribution describing the attentional spotlight
+        @sd_r (float): shrinking rate of the standard deviation of the Gaussian distribution describing the attentional spotlight
         @tau (float): non-decision time
         @dt (float): change in time 
         @var (float): variance

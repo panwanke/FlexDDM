@@ -68,12 +68,12 @@ class mDSTP(Model):
         Performs simulations for DSTP model.
         @alphaSS (float): boundary separation for stimulus selection phase
         @betaSS (float): initial bias for stimulus selection phase
-        @deltaSS (float): drift rate for stimulus selection phase
+        @etaSS (float): scaling factor for noise in stimulus selection phase
         @alphaRS (float): boundary separation for response selection phase 
-        @betaRS (float): inital bias for response selection phase 
-        @delta_target (float): drift rate for target arrow during response selection BEFORE stimulus is selected 
-        @delta_flanker (float): drift rate for flanker arrows during response selection BEFORE stimulus is selected
-        @deltaRS (float): drift rate for the reponse selection phase after a stimulus (either flanker or target) has been selected
+        @betaRS (float): initial bias for response selection phase 
+        @etaS1 (float): scaling factor for noise in first response selection phase
+        @etaS2 (float): scaling factor for noise in second response selection phase
+        @eta_r (float): decay rate for noise scaling
         @tau (float): non-decision time
         @dt (float): change in time 
         @var (float): variance
