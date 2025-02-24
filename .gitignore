@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 .DS_Store
+fit
+validation
+.vscode
 
 # C extensions
 *.so
