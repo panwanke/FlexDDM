@@ -17,3 +17,4 @@ from .DDMfz import DDMfz
 from .DMCfz import DMCfz
 from .DSTPfz import DSTPfz
 from .SSPfz import SSPfz
+from .nsbi_models import nDDMfz, nDMCfz, nSSPfz, nDSTPfz
