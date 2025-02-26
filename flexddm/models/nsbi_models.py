@@ -116,17 +116,17 @@ class nDDMfz(Model):
             else:
                 self.data = data
             self.bounds = {
-                "alpha": (0.1, 2),
-                "delta_c": (0.1, 5),
-                "delta_i": (0.1, 5),
-                "tau": (0.1, min(self.data["rt"])),
+                "$a$": (0.1, 2),
+                "$v_{cong}$": (-1, 5),
+                "$v_{incong}$": (-1, 5),
+                "$t$": (0.1, min(self.data["rt"])),
             }
         else:
             self.bounds = {
-                "alpha": (0.1, 2),
-                "delta_c": (0.1, 5),
-                "delta_i": (0.1, 5),
-                "tau": (0.1, 1),
+                "$a$": (0.1, 2),
+                "$v_{cong}$": (-1, 5),
+                "$v_{incong}$": (-1, 5),
+                "$t$": (0.1, 1),
             }
 
         self.parameter_names = list(self.bounds.keys())
@@ -141,8 +141,7 @@ class nDDMfz(Model):
     def model_simulation(alpha, delta_c, delta_i, tau, dt, var, nTrials, noiseseed):
         """
         Performs simulations for standard flanker diffusion model.
-        @alpha_c (float): boundary separation for congruent trials
-        @alpha_i (float): boundary separation for incongruent trials
+        @alpha (float): boundary separation
         @delta_c (float): drift rate for incongruent trials
         @delta_i (float): drift rate for incongruent trials
         @tau (float): non-decision time
@@ -178,10 +177,10 @@ class nDDMfz(Model):
             ):  # keep accumulating evidence until you reach a threshold
                 evidence += delta * dt + np.random.choice(updates) * np.sqrt(dt)
                 t += dt  # increment time by the unit dt
-            if evidence > alpha:
-                choicelist[n] = 1  # choose the upper threshold action
-            else:
-                choicelist[n] = 0  # choose the lower threshold action
+            if evidence > alpha / 2:
+                    choicelist[n] = 1
+            elif evidence < -alpha / 2:
+                choicelist[n] = 0
             rtlist[n] = t + tau
         return (np.arange(1, nTrials + 1), choicelist, rtlist, congruencylist)
 
@@ -227,21 +226,21 @@ class nDMCfz(Model):
             else:
                 self.data = data
             self.bounds = {
-                "alpha": (0.7, 1.26),
-                "mu_c": (1.58, 6.32),
-                "shape": (1.5, 4.5),
-                "characteristic_time": (20, 120),
-                "peak_amplitude": (118, 316),
-                "tau": (0.1, min(self.data["rt"])),
+                "$a$": (0.7, 1.26),
+                "$v_{c}$": (1.58, 6.32),
+                "$\alpha$": (1.5, 4.5),
+                "$\tau$": (20, 120),
+                "$\eta$": (118, 316),
+                "$t$": (0.1, min(self.data["rt"])),
             }
         else:
             self.bounds = {
-                "alpha": (0.7, 1.26),
-                "mu_c": (1.58, 6.32),
-                "shape": (1.5, 4.5),
-                "characteristic_time": (20, 120),
-                "peak_amplitude": (118, 316),
-                "tau": (0.1, 0.40),
+                "$a$": (0.7, 1.26),
+                "$v_{c}$": (1.58, 6.32),
+                "$\\alpha$": (1.5, 4.5),
+                "$\\tau$": (20, 120),
+                "$\\eta$": (118, 316),
+                "$t$": (0.1, 0.40),
             }
         self.parameter_names = list(self.bounds.keys())
         self.param_number = len(self.parameter_names)
@@ -376,19 +375,19 @@ class nSSPfz(Model):
             else:
                 self.data = data
             self.bounds = {
-                "alpha": (1.4, 3.8),
-                "p": (2, 5.5),
-                "sd_0": (1, 2.6),
-                "sd_r": (10, 26),
-                "tau": (0.15, min(self.data["rt"])),
+                "$a$": (1.4, 3.8),
+                "$p$": (2, 5.5),
+                "$sd_a$": (1, 2.6),
+                "$r_d$": (10, 26),
+                "$t$": (0.15, min(self.data["rt"])),
             }
         else:
             self.bounds = {
-                "alpha": (0.01, 0.19),
-                "p": (2, 5.5),
-                "sd_0": (1, 2.6),
-                "sd_r": (10, 26),
-                "tau": (0.15, 0.45),
+                "$a$": (1.4, 3.8),
+                "$p$": (2, 5.5),
+                "$sd_a$": (1, 2.6),
+                "$r_d$": (10, 26),
+                "$t$": (0.15, 0.45),
             }
 
         self.parameter_names = list(self.bounds.keys())
@@ -399,12 +398,12 @@ class nSSPfz(Model):
         )
 
     @nb.jit(nopython=True, cache=True, parallel=False, fastmath=True, nogil=True)
-    def model_simulation(alpha, p, sd_0, sd_r, tau, dt, var, nTrials, noiseseed):
+    def model_simulation(alpha, p, sd_a, sd_r, tau, dt, var, nTrials, noiseseed):
         """
         Performs simulations for SSPfz model.
         @alpha (float): boundary separation
         @p (float): perceptual input of the stimulus
-        @sd_0 (float): initial standard deviation of the Gaussian distribution describing the attentional spotlight
+        @sd_a (float): initial standard deviation of the Gaussian distribution describing the attentional spotlight
         @sd_r (float): shrinking rate of the standard deviation of the Guassian distribution describing the attentional spotlight
         @tau (float): non-decision time
         @dt (float): change in time
@@ -448,15 +447,15 @@ class nSSPfz(Model):
                 #     delta = s_ta * p + s_fl * p
                 if congruencylist[n] == "incongruent":
                     # NOTE: SSP_drift return array, so we need [0]
-                    delta = SSP_drift(t, p, sd_0, sd_r)[0].item()
+                    delta = SSP_drift(t, p, sd_a, sd_r)[0].item()
                 else:
                     delta = p
                 evidence += delta * dt + np.random.choice(noise) * np.sqrt(dt)
                 t += dt
             if evidence > alpha / 2:
-                choicelist[n] = 1  # choose the upper threshold action
-            else:
-                choicelist[n] = 0  # choose the lower threshold action
+                    choicelist[n] = 1
+            elif evidence < -alpha / 2:
+                choicelist[n] = 0
             rtlist[n] = t + tau
 
         return (np.arange(1, nTrials + 1), choicelist, rtlist, congruencylist)
@@ -503,23 +502,23 @@ class nDSTPfz(Model):
             else:
                 self.data = data
             self.bounds = {
-                "alphaSS": (1.4, 3.8),
-                "deltaSS": (2.5, 5.5),
-                "alphaRS": (1.4, 3.8),
-                "delta_target": (0.5, 1.5),
-                "delta_flanker": (0.5, 2.5),
-                "deltaRS": (4.0, 12.0),
-                "tau": (0.15, min(self.data["rt"])),
+                "$a_{ss}$": (1.4, 3.8),
+                "$v_{ss}$": (2.5, 5.5),
+                "$a$": (1.4, 3.8),
+                "$v_{ta}$": (0.5, 1.5),
+                "$v_{fl}$": (0.5, 2.5),
+                "$v_{p2}$": (4.0, 12.0),
+                "$t$": (0.15, min(self.data["rt"])),
             }
         else:
             self.bounds = {
-                "alphaSS": (1.4, 3.8),
-                "deltaSS": (2.5, 5.5),
-                "alphaRS": (1.4, 3.8),
-                "delta_target": (0.5, 1.5),
-                "delta_flanker": (0.5, 2.5),
-                "deltaRS": (4.0, 12.0),
-                "tau": (0.15, 0.45),
+                "$a_{ss}$": (1.4, 3.8),
+                "$v_{ss}$": (2.5, 5.5),
+                "$a$": (1.4, 3.8),
+                "$v_{ta}$": (0.5, 1.5),
+                "$v_{fl}$": (0.5, 2.5),
+                "$v_{p2}$": (4.0, 12.0),
+                "$t$": (0.15, 0.45),
             }
 
         self.parameter_names = list(self.bounds.keys())

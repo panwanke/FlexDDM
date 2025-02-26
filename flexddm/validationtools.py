@@ -1,9 +1,6 @@
 import pandas as pd
-from .models.Model import Model
 import numpy as np
-import sys
 from flexddm import modelfit
-import pandas as pd
 import seaborn as sns
 from tqdm.notebook import tqdm
 import matplotlib.pyplot as plt
@@ -76,7 +73,7 @@ def model_recovery(models, num_simulations=50):
     plt.show()
 
     figure = heatmap.get_figure()    
-    plot_path = os.path.join(output_dir, "model_validation.png")  
+    plot_path = os.path.join(output_dir, "model_validation.pdf")  
     figure.savefig(plot_path, dpi=400)
 
 # one set of parameters 
@@ -112,6 +109,7 @@ def param_recovery(models, num_simulations=50):
                     # creating a giant dataframe with the data from one singular model 
                     simulation_data = convertToDF(model.modelsimulationfunction(*initial_params, nTrials=100), 0)
                     # print("sim data: \n", simulation_data)
+                    simulation_data.to_csv(os.path.join(model_dir, f"{model.__class__.__name__}_sim_data.csv"))
                     fit_data = modelfit.fit([model], simulation_data, startingParticipants=0, endingParticipants=0, return_dataframes = True, posterior_predictive_check=False, output_fileName='output' + str(counter) + '.csv')
                     fit_data = fit_data[0]
                     # print(fit_data)
@@ -150,7 +148,9 @@ def param_recovery(models, num_simulations=50):
                 )
             
             plt.tight_layout()
+            plt.savefig(os.path.join(model_dir, f"{model.__class__.__name__}_param_recovery.pdf"), dpi=300, bbox_inches="tight")
             plt.show()
+
         except Exception as e:
             print(e)
             print(f"Failed to draw parameters recovery for {model.__class__.__name__}")
